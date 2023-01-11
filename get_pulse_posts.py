@@ -84,7 +84,7 @@ def get_lst_posts(length):
 
 
 def posts_update():
-    get_lst_posts(length=100000)
+    get_lst_posts(length=300000)
     main_df = pd.read_csv('data/main.csv')
     last_posts_df = pd.read_csv('data/last_days.csv')
 
