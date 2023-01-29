@@ -84,7 +84,7 @@ def get_lst_posts(length):
 
 
 def posts_update():
-    get_lst_posts(length=300000)
+    get_lst_posts(length=500000)
     main_df = pd.read_csv('data/main.csv')
     last_posts_df = pd.read_csv('data/last_days.csv')
 
@@ -97,7 +97,7 @@ def posts_update():
     # максимальная дата постов из последней сборки
     max_df_last_posts = last_posts_df.posts_dt.max()
     lst_posts = last_posts_df[
-        (last_posts_df['posts_dt'] > min_df_last_posts) & (last_posts_df['posts_dt'] < max_df_last_posts)]
+        (last_posts_df['posts_dt'] > max_dt) & (last_posts_df['posts_dt'] < max_df_last_posts)]
     # minimal dt of lst_posts
     min_dt_last = lst_posts.posts_dt.min()
 
