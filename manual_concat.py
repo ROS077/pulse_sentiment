@@ -30,3 +30,4 @@ if max_dt < min_df_last_posts:
     main.to_csv(f'data/backup/main_{today.replace("-", "")}.csv', index=False)
     main.to_csv(f'data/main.csv', index=False)
     print('Готово!!!')
+
