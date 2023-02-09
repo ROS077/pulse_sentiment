@@ -1,6 +1,6 @@
-from selenium import webdriver
 import time
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup as bs
 import pandas as pd
@@ -16,6 +16,7 @@ import locale
 locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 today = datetime.datetime.today().strftime('%Y-%m-%d')
 yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+max_posted_dt = pd.read_csv('data/main.csv').posts_dt.max()
 
 def str_to_dt(x) -> str:
     """Function for create date from parcing text"""
@@ -30,16 +31,36 @@ def str_to_dt(x) -> str:
         return date
 
 
+def check_min_parcing_dt(driver_):
+    '''Checks min dt of parced posts'''
+    source_data = driver_.page_source
+    soup = bs(source_data, 'lxml')
+    posts_dt = soup.find_all('div', {'class': 'pulse-posts-by-ticker__c8gxOZ'})
+    posts_dt = [posts_dt.text for posts_dt in posts_dt]
+    min_parced_dt = min([str_to_dt(x) for x in posts_dt])
+
+    return min_parced_dt
+
+
 def parcing(security, length):
     s = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=s)
     driver.get(f'https://www.tinkoff.ru/invest/stocks/{security}/pulse/')
     page_length = driver.execute_script("return document.body.scrollHeight")
 
+    counter = 0
     while page_length < length:
         driver.execute_script(f"window.scrollTo(0, {page_length - 1800});")
         page_length = driver.execute_script("return document.body.scrollHeight")
 
+        # выход из парсинга, если минимальная дата сборки нас устраивает
+        counter += 1
+        if counter % 10 == 0:
+            min_parced_dt = check_min_parcing_dt(driver)
+            if min_parced_dt < max_posted_dt:
+                break
+
+    print(counter) # на первое время для анализа оптимального параметра
     source_data = driver.page_source
     soup = bs(source_data, 'lxml')
 
@@ -84,7 +105,7 @@ def get_lst_posts(length):
 
 
 def posts_update():
-    get_lst_posts(length=500000)
+    get_lst_posts(length=1000000)
     main_df = pd.read_csv('data/main.csv')
     last_posts_df = pd.read_csv('data/last_days.csv')
 
