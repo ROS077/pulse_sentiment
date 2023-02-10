@@ -18,6 +18,7 @@ today = datetime.datetime.today().strftime('%Y-%m-%d')
 yesterday = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 max_posted_dt = pd.read_csv('data/main.csv').posts_dt.max()
 
+
 def str_to_dt(x) -> str:
     """Function for create date from parcing text"""
     x0 = x.split()[0]
@@ -55,7 +56,7 @@ def parcing(security, length):
 
         # выход из парсинга, если минимальная дата сборки нас устраивает
         counter += 1
-        if counter % 10 == 0:
+        if counter % 20 == 0:
             min_parced_dt = check_min_parcing_dt(driver)
             if min_parced_dt < max_posted_dt:
                 break
