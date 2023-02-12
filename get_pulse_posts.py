@@ -38,9 +38,13 @@ def check_min_parcing_dt(driver_):
     soup = bs(source_data, 'lxml')
     posts_dt = soup.find_all('div', {'class': 'pulse-posts-by-ticker__c8gxOZ'})
     posts_dt = [posts_dt.text for posts_dt in posts_dt]
-    min_parced_dt = min([str_to_dt(x) for x in posts_dt])
 
-    return min_parced_dt
+    try:
+        min_parced_dt = min([str_to_dt(x) for x in posts_dt])
+        return min_parced_dt
+    except:
+        print('Does not have new posts from parcing')
+        return 0
 
 
 def parcing(security, length):
@@ -58,7 +62,7 @@ def parcing(security, length):
         counter += 1
         if counter % 20 == 0:
             min_parced_dt = check_min_parcing_dt(driver)
-            if min_parced_dt < max_posted_dt:
+            if min_parced_dt<max_posted_dt or min_parced_dt==0:
                 break
 
     print(counter) # на первое время для анализа оптимального параметра
